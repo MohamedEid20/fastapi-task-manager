@@ -30,10 +30,27 @@ async def get_tasks(
     limit: int = Query(100, ge=1, le=1000),
     status: Optional[TaskStatus] = None,
     priority: Optional[TaskPriority] = None,
+    sort_by: Optional[str] = Query(
+        None, 
+        description="Field to sort by",
+        enum=["id", "title", "description", "status", "priority", "created_at", "updated_at", "due_date", "assigned_to"]
+    ),
+    sort_order: Optional[str] = Query(
+        "asc",
+        description="Sort order",
+        enum=["asc", "desc"]
+    ),
     session: Session = Depends(get_session)
 ):
     crud = TaskCRUD(session)
-    return crud.get_tasks(skip=skip, limit=limit, status=status, priority=priority)
+    return crud.get_tasks(
+        skip=skip, 
+        limit=limit, 
+        status=status, 
+        priority=priority,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
 
 
 @router.get("/tasks/{task_id}", response_model=TaskResponse)
@@ -63,12 +80,54 @@ async def delete_task(task_id: int, session: Session = Depends(get_session)):
 
 
 @router.get("/tasks/status/{status}", response_model=List[TaskResponse])
-async def get_tasks_by_status(status: TaskStatus, session: Session = Depends(get_session)):
+async def get_tasks_by_status(
+    status: TaskStatus,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    sort_by: Optional[str] = Query(
+        None, 
+        description="Field to sort by",
+        enum=["id", "title", "description", "status", "priority", "created_at", "updated_at", "due_date", "assigned_to"]
+    ),
+    sort_order: Optional[str] = Query(
+        "asc",
+        description="Sort order",
+        enum=["asc", "desc"]
+    ),
+    session: Session = Depends(get_session)
+):
     crud = TaskCRUD(session)
-    return crud.get_tasks_by_status(status)
+    return crud.get_tasks(
+        skip=skip,
+        limit=limit,
+        status=status,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
 
 
 @router.get("/tasks/priority/{priority}", response_model=List[TaskResponse])
-async def get_tasks_by_priority(priority: TaskPriority, session: Session = Depends(get_session)):
+async def get_tasks_by_priority(
+    priority: TaskPriority,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    sort_by: Optional[str] = Query(
+        None, 
+        description="Field to sort by",
+        enum=["id", "title", "description", "status", "priority", "created_at", "updated_at", "due_date", "assigned_to"]
+    ),
+    sort_order: Optional[str] = Query(
+        "asc",
+        description="Sort order",
+        enum=["asc", "desc"]
+    ),
+    session: Session = Depends(get_session)
+):
     crud = TaskCRUD(session)
-    return crud.get_tasks_by_priority(priority)
+    return crud.get_tasks(
+        skip=skip,
+        limit=limit,
+        priority=priority,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )

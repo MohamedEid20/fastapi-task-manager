@@ -1,8 +1,9 @@
 from sqlmodel import create_engine, SQLModel, Session
 from typing import Generator
+from config import get_settings
 
-DATABASE_URL = "sqlite:///./tasks.db"
-engine = create_engine(DATABASE_URL, echo=True, connect_args={"check_same_thread": False})
+settings = get_settings()
+engine = create_engine(settings.DATABASE_URL, connect_args={"check_same_thread": False})
 
 
 def create_db_and_tables():
