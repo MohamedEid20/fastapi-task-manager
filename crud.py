@@ -24,9 +24,7 @@ class TaskCRUD:
         skip: int = 0, 
         limit: int = 100, 
         status: Optional[TaskStatus] = None,
-        priority: Optional[TaskPriority] = None,
-        sort_by: Optional[str] = None,
-        sort_order: Optional[str] = "asc"
+        priority: Optional[TaskPriority] = None
     ) -> List[Task]:
         statement = select(Task)
         
@@ -34,19 +32,16 @@ class TaskCRUD:
             statement = statement.where(Task.status == status)
         if priority:
             statement = statement.where(Task.priority == priority)
-        
-        # Add sorting if specified
-        if sort_by:
-            # Get the attribute to sort by
-            sort_attr = getattr(Task, sort_by, None)
-            if sort_attr:
-                # Apply sort direction
-                if sort_order.lower() == "desc":
-                    statement = statement.order_by(sort_attr.desc())
-                else:
-                    statement = statement.order_by(sort_attr.asc())
             
         statement = statement.offset(skip).limit(limit)
+        return list(self.session.exec(statement).all())
+
+    def get_tasks_by_status(self, status: TaskStatus) -> List[Task]:
+        statement = select(Task).where(Task.status == status)
+        return list(self.session.exec(statement).all())
+
+    def get_tasks_by_priority(self, priority: TaskPriority) -> List[Task]:
+        statement = select(Task).where(Task.priority == priority)
         return list(self.session.exec(statement).all())
 
     def update_task(self, task_id: int, task_data: TaskUpdate) -> Optional[Task]:

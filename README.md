@@ -4,46 +4,14 @@ A FastAPI-based REST API for managing tasks with CRUD operations, filtering, and
 
 ## Setup
 
-### Installation
+### Option 1: Local Setup
 
 ```bash
 pip install -r requirements.txt
-```
-
-### Environment Configuration
-
-The application uses environment variables for configuration. Copy the example file and adjust as needed:
-
-```bash
-# Copy the example environment file
-cp .env.example .env
-
-# Edit the .env file as needed
-```
-
-Environment variables include:
-
-- `DATABASE_URL`: Connection string for the database
-- `API_HOST`: Host to bind the server to
-- `API_PORT`: Port to bind the server to
-- `DEBUG`: Enable/disable debug mode
-- `APP_TITLE`: Application title
-- `APP_DESCRIPTION`: Application description
-- `APP_VERSION`: Application version
-
-### Run the application
-
-```bash
 python main.py
 ```
 
-### Access API documentation
-
-Visit [http://localhost:8000/docs](http://localhost:8000/docs)
-
-## Docker Support
-
-### Build and run with Docker
+### Option 2: Docker
 
 ```bash
 # Build the image
@@ -51,57 +19,58 @@ docker build -t task-api .
 
 # Run the container
 docker run -p 8000:8000 task-api
-
-# Run with custom environment variables
-docker run -p 8000:8000 \
-  -e DATABASE_URL=sqlite:///./tasks.db \
-  -e DEBUG=false \
-  task-api
 ```
+
+## Configuration
+
+Copy `.env.example` to `.env` and modify as needed:
+
+```bash
+cp .env.example .env
+```
+
+Available settings:
+
+- `APP_NAME` - Application name
+- `DEBUG` - Enable debug mode (true/false)
+- `HOST` - Server host (default: 0.0.0.0)
+- `PORT` - Server port (default: 8000)
+- `DATABASE_URL` - Database connection string
 
 ## API Endpoints
 
 - `GET /` - API info
 - `GET /health` - Health check
 - `POST /tasks` - Create task
-- `GET /tasks` - List tasks (supports filtering, pagination, and sorting)
+- `GET /tasks` - List tasks (supports filtering and pagination)
 - `GET /tasks/{id}` - Get specific task
 - `PUT /tasks/{id}` - Update task
 - `DELETE /tasks/{id}` - Delete task
-- `GET /tasks/status/{status}` - Filter by status (supports pagination and sorting)
-- `GET /tasks/priority/{priority}` - Filter by priority (supports pagination and sorting)
+- `GET /tasks/status/{status}` - Filter by status
+- `GET /tasks/priority/{priority}` - Filter by priority
 
-## Example API calls
+## Documentation
+
+Visit http://localhost:8000/docs for interactive API documentation.
+
+## Examples
 
 Create a task:
 
 ```bash
 curl -X POST "http://localhost:8000/tasks" \
      -H "Content-Type: application/json" \
-     -d '{"title": "Sample Task", "priority": "high"}'
+     -d '{"title": "Test task", "priority": "high"}'
 ```
 
 Get all tasks:
 
 ```bash
-curl -X GET "http://localhost:8000/tasks"
+curl http://localhost:8000/tasks
 ```
 
 Filter tasks:
 
 ```bash
-curl -X GET "http://localhost:8000/tasks?status=pending&priority=high&skip=0&limit=10"
-```
-
-Sort tasks:
-
-```bash
-# Sort by due date (ascending)
-curl -X GET "http://localhost:8000/tasks?sort_by=due_date&sort_order=asc"
-
-# Sort by priority (descending)
-curl -X GET "http://localhost:8000/tasks?sort_by=priority&sort_order=desc"
-
-# Combine filtering and sorting
-curl -X GET "http://localhost:8000/tasks?status=pending&sort_by=created_at&sort_order=desc"
+curl http://localhost:8000/tasks?status=pending&priority=high&skip=0&limit=10
 ```
